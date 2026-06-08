@@ -1,5 +1,6 @@
 from database import SessionLocal
 from models import Vehicle
+import uuid
 
 
 def save_detected_vehicles(vehicle_counts):
@@ -12,8 +13,10 @@ def save_detected_vehicles(vehicle_counts):
 
             for i in range(count):
 
+                unique_id = str(uuid.uuid4())[:8]
+
                 vehicle = Vehicle(
-                    vehicle_number=f"AUTO-{vehicle_type[:3].upper()}-{i}",
+                    vehicle_number=f"{vehicle_type.upper()}-{unique_id}",
                     vehicle_type=vehicle_type
                 )
 

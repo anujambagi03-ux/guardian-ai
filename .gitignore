@@ -1,29 +1,19 @@
 # Python
-venv/
-.venv/
 __pycache__/
 *.pyc
 
-# Backend
-backend/venv/
+# Database
+*.db
 
-# Node
-node_modules/
-frontend/node_modules/
+# Virtual Environment
+venv/
 
-# Environment
-.env
+# Generated Files
+backend/frames/
+backend/uploads/
+
+# YOLO Weights
+*.pt
 
 # VS Code
 .vscode/
-
-# Build files
-dist/
-build/
-
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db

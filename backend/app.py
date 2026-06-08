@@ -10,6 +10,9 @@ from video_processor import extract_frames
 from vehicle_detector import detect_vehicles
 from vehicle_db import save_detected_vehicles
 
+from violation_detector import detect_violations
+from violation_db import save_detected_violations
+
 import os
 import shutil
 
@@ -155,17 +158,29 @@ def upload_video(
     vehicle_analysis = detect_vehicles()
 
     save_detected_vehicles(
-        vehicle_analysis
+    vehicle_analysis
     )
 
-    return {
-        "message": "Video uploaded successfully",
-        "filename": file.filename,
-        "path": file_path,
-        "frame_analysis": frame_analysis,
-        "vehicle_analysis": vehicle_analysis
-    }
+    violation_analysis = detect_violations(
+    vehicle_analysis
+    )
 
+    save_detected_violations(
+    violation_analysis
+   )
+
+    
+        
+    
+
+    return {
+    "message": "Video uploaded successfully",
+    "filename": file.filename,
+    "path": file_path,
+    "frame_analysis": frame_analysis,
+    "vehicle_analysis": vehicle_analysis,
+    "violation_analysis": violation_analysis
+    }
 
 # =====================================================
 # VEHICLES
