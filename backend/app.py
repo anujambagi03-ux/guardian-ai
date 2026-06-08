@@ -73,6 +73,37 @@ def dashboard(
     }
 
 
+@app.get("/analytics")
+def analytics(
+    db: Session = Depends(get_db)
+):
+    total_vehicles = db.query(Vehicle).count()
+
+    cars = db.query(Vehicle).filter(
+        Vehicle.vehicle_type == "car"
+    ).count()
+
+    motorcycles = db.query(Vehicle).filter(
+        Vehicle.vehicle_type == "motorcycle"
+    ).count()
+
+    buses = db.query(Vehicle).filter(
+        Vehicle.vehicle_type == "bus"
+    ).count()
+
+    trucks = db.query(Vehicle).filter(
+        Vehicle.vehicle_type == "truck"
+    ).count()
+
+    return {
+        "total_vehicles": total_vehicles,
+        "cars": cars,
+        "motorcycles": motorcycles,
+        "buses": buses,
+        "trucks": trucks
+    }
+
+
 @app.get("/dashboard/details")
 def dashboard_details(
     db: Session = Depends(get_db)
@@ -132,10 +163,6 @@ def test():
     }
 
 
-# =====================================================
-# VIDEO UPLOAD + FRAME EXTRACTION + YOLO + DATABASE
-# =====================================================
-
 @app.post("/upload-video")
 def upload_video(
     file: UploadFile = File(...)
@@ -158,33 +185,26 @@ def upload_video(
     vehicle_analysis = detect_vehicles()
 
     save_detected_vehicles(
-    vehicle_analysis
+        vehicle_analysis
     )
 
     violation_analysis = detect_violations(
-    vehicle_analysis
+        vehicle_analysis
     )
 
     save_detected_violations(
-    violation_analysis
-   )
-
-    
-        
-    
+        violation_analysis
+    )
 
     return {
-    "message": "Video uploaded successfully",
-    "filename": file.filename,
-    "path": file_path,
-    "frame_analysis": frame_analysis,
-    "vehicle_analysis": vehicle_analysis,
-    "violation_analysis": violation_analysis
+        "message": "Video uploaded successfully",
+        "filename": file.filename,
+        "path": file_path,
+        "frame_analysis": frame_analysis,
+        "vehicle_analysis": vehicle_analysis,
+        "violation_analysis": violation_analysis
     }
 
-# =====================================================
-# VEHICLES
-# =====================================================
 
 @app.post("/vehicles")
 def create_vehicle(
@@ -226,10 +246,6 @@ def get_all_vehicles(
     return result
 
 
-# =====================================================
-# VIOLATIONS
-# =====================================================
-
 @app.post("/violations")
 def create_violation(
     violation: ViolationCreate,
@@ -267,10 +283,6 @@ def get_all_violations(
 
     return result
 
-
-# =====================================================
-# ACCIDENTS
-# =====================================================
 
 @app.post("/accidents")
 def create_accident(
