@@ -13,6 +13,18 @@ from vehicle_db import save_detected_vehicles
 from violation_detector import detect_violations
 from violation_db import save_detected_violations
 
+from accident_detector import detect_accidents
+from accident_db import save_detected_accidents
+
+from analytics_service import generate_analytics
+
+from report_service import (
+    vehicle_report,
+    violation_report,
+    accident_report,
+    summary_report
+)
+
 import os
 import shutil
 
@@ -73,37 +85,6 @@ def dashboard(
     }
 
 
-@app.get("/analytics")
-def analytics(
-    db: Session = Depends(get_db)
-):
-    total_vehicles = db.query(Vehicle).count()
-
-    cars = db.query(Vehicle).filter(
-        Vehicle.vehicle_type == "car"
-    ).count()
-
-    motorcycles = db.query(Vehicle).filter(
-        Vehicle.vehicle_type == "motorcycle"
-    ).count()
-
-    buses = db.query(Vehicle).filter(
-        Vehicle.vehicle_type == "bus"
-    ).count()
-
-    trucks = db.query(Vehicle).filter(
-        Vehicle.vehicle_type == "truck"
-    ).count()
-
-    return {
-        "total_vehicles": total_vehicles,
-        "cars": cars,
-        "motorcycles": motorcycles,
-        "buses": buses,
-        "trucks": trucks
-    }
-
-
 @app.get("/dashboard/details")
 def dashboard_details(
     db: Session = Depends(get_db)
@@ -156,12 +137,59 @@ def dashboard_details(
     }
 
 
+# =====================================================
+# ANALYTICS
+# =====================================================
+
+@app.get("/analytics")
+def analytics(
+    db: Session = Depends(get_db)
+):
+    return generate_analytics(db)
+
+
+# =====================================================
+# REPORTS
+# =====================================================
+
+@app.get("/reports/vehicles")
+def vehicles_report(
+    db: Session = Depends(get_db)
+):
+    return vehicle_report(db)
+
+
+@app.get("/reports/violations")
+def violations_report(
+    db: Session = Depends(get_db)
+):
+    return violation_report(db)
+
+
+@app.get("/reports/accidents")
+def accidents_report(
+    db: Session = Depends(get_db)
+):
+    return accident_report(db)
+
+
+@app.get("/reports/summary")
+def reports_summary(
+    db: Session = Depends(get_db)
+):
+    return summary_report(db)
+
+
 @app.get("/test")
 def test():
     return {
         "message": "working"
     }
 
+
+# =====================================================
+# VIDEO UPLOAD + AI PIPELINE
+# =====================================================
 
 @app.post("/upload-video")
 def upload_video(
@@ -196,15 +224,28 @@ def upload_video(
         violation_analysis
     )
 
+    accident_analysis = detect_accidents(
+        violation_analysis
+    )
+
+    save_detected_accidents(
+        accident_analysis
+    )
+
     return {
         "message": "Video uploaded successfully",
         "filename": file.filename,
         "path": file_path,
         "frame_analysis": frame_analysis,
         "vehicle_analysis": vehicle_analysis,
-        "violation_analysis": violation_analysis
+        "violation_analysis": violation_analysis,
+        "accident_analysis": accident_analysis
     }
 
+
+# =====================================================
+# VEHICLES
+# =====================================================
 
 @app.post("/vehicles")
 def create_vehicle(
@@ -246,23 +287,9 @@ def get_all_vehicles(
     return result
 
 
-@app.post("/violations")
-def create_violation(
-    violation: ViolationCreate,
-    db: Session = Depends(get_db)
-):
-    new_violation = Violation(
-        vehicle_number=violation.vehicle_number,
-        violation_type=violation.violation_type,
-        location=violation.location
-    )
-
-    db.add(new_violation)
-    db.commit()
-    db.refresh(new_violation)
-
-    return new_violation
-
+# =====================================================
+# VIOLATIONS
+# =====================================================
 
 @app.get("/violations")
 def get_all_violations(
@@ -284,22 +311,9 @@ def get_all_violations(
     return result
 
 
-@app.post("/accidents")
-def create_accident(
-    accident: AccidentCreate,
-    db: Session = Depends(get_db)
-):
-    new_accident = Accident(
-        location=accident.location,
-        severity=accident.severity
-    )
-
-    db.add(new_accident)
-    db.commit()
-    db.refresh(new_accident)
-
-    return new_accident
-
+# =====================================================
+# ACCIDENTS
+# =====================================================
 
 @app.get("/accidents")
 def get_all_accidents(
