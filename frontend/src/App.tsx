@@ -9,6 +9,7 @@ import AccidentDetection from "./pages/AccidentDetection";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Monitoring from "./pages/Monitoring";
 
 function App() {
   return (
@@ -18,6 +19,11 @@ function App() {
         <Route path="/" element={<MainLayout />}>
 
           <Route index element={<Dashboard />} />
+
+          <Route
+            path="monitoring"
+            element={<Monitoring />}
+          />
 
           <Route
             path="vehicles"

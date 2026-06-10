@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 function MainLayout() {
   return (
     <div className="d-flex">
-      {/* Sidebar */}
+
       <div
         className="bg-dark text-white p-3"
         style={{
@@ -18,43 +18,73 @@ function MainLayout() {
         <ul className="nav flex-column">
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/">
+            <Link
+              className="nav-link text-white"
+              to="/"
+            >
               Dashboard
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/vehicles">
+            <Link
+              className="nav-link text-white"
+              to="/monitoring"
+            >
+              Real-Time Monitoring
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link
+              className="nav-link text-white"
+              to="/vehicles"
+            >
               Vehicle Detection
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/violations">
+            <Link
+              className="nav-link text-white"
+              to="/violations"
+            >
               Violations
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/accidents">
+            <Link
+              className="nav-link text-white"
+              to="/accidents"
+            >
               Accident Detection
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/analytics">
+            <Link
+              className="nav-link text-white"
+              to="/analytics"
+            >
               Analytics
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/reports">
+            <Link
+              className="nav-link text-white"
+              to="/reports"
+            >
               Reports
             </Link>
           </li>
 
           <li className="nav-item">
-            <Link className="nav-link text-white" to="/settings">
+            <Link
+              className="nav-link text-white"
+              to="/settings"
+            >
               Settings
             </Link>
           </li>
@@ -62,11 +92,10 @@ function MainLayout() {
         </ul>
       </div>
 
-      {/* Content */}
-
       <div className="container-fluid p-4">
         <Outlet />
       </div>
+
     </div>
   );
 }

@@ -187,7 +187,48 @@ def analytics(
 ):
     return generate_analytics(db)
 
+# =====================================================
+# REAL TIME MONITORING
+# =====================================================
 
+@app.get("/monitoring/live")
+def monitoring_live(
+    db: Session = Depends(get_db)
+):
+    from datetime import datetime
+
+    total_vehicles = db.query(
+        Vehicle
+    ).count()
+
+    total_violations = db.query(
+        Violation
+    ).count()
+
+    total_accidents = db.query(
+        Accident
+    ).count()
+
+    total_alerts = db.query(
+        Alert
+    ).count()
+
+    risk_status = (
+        "HIGH"
+        if total_alerts > 0
+        else "LOW"
+    )
+
+    return {
+        "total_vehicles": total_vehicles,
+        "total_violations": total_violations,
+        "total_accidents": total_accidents,
+        "total_alerts": total_alerts,
+        "risk_status": risk_status,
+        "last_updated": str(
+            datetime.utcnow()
+        )
+    }
 # =====================================================
 # REPORTS
 # =====================================================
