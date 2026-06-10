@@ -25,6 +25,8 @@ from report_service import (
     summary_report
 )
 
+from risk_predictor import predict_accident_risk
+
 import os
 import shutil
 
@@ -332,3 +334,42 @@ def get_all_accidents(
         })
 
     return result
+
+
+# =====================================================
+# ML RISK PREDICTION
+# =====================================================
+
+@app.post("/predict-risk")
+def predict_risk(
+    hour: int,
+    day_of_week: int,
+    traffic_density: int,
+    rainfall: int,
+    visibility: int,
+    speed_avg: int,
+    junction_score: int
+):
+    prediction = predict_accident_risk(
+        hour,
+        day_of_week,
+        traffic_density,
+        rainfall,
+        visibility,
+        speed_avg,
+        junction_score
+    )
+
+    risk_level = "HIGH" if prediction == 1 else "LOW"
+
+    return {
+        "prediction": prediction,
+        "risk_level": risk_level,
+        "hour": hour,
+        "day_of_week": day_of_week,
+        "traffic_density": traffic_density,
+        "rainfall": rainfall,
+        "visibility": visibility,
+        "speed_avg": speed_avg,
+        "junction_score": junction_score
+    }
