@@ -29,3 +29,24 @@ class Accident(Base):
     location = Column(String)
     severity = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+
+class Alert(Base):
+    __tablename__ = "alerts"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    alert_type = Column(String)
+    severity = Column(String)
+
+    message = Column(String)
+
+    status = Column(
+        String,
+        default="ACTIVE"
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

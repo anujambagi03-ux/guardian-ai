@@ -15,3 +15,9 @@ class ViolationCreate(BaseModel):
 class AccidentCreate(BaseModel):
     location: str
     severity: str
+
+
+class AlertCreate(BaseModel):
+    alert_type: str
+    severity: str
+    message: str

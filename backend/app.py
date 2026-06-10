@@ -3,8 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from database import engine, SessionLocal
-from models import Base, Vehicle, Violation, Accident
-from schemas import VehicleCreate, ViolationCreate, AccidentCreate
+
+from models import (
+    Base,
+    Vehicle,
+    Violation,
+    Accident,
+    Alert
+)
+
+from schemas import (
+    VehicleCreate,
+    ViolationCreate,
+    AccidentCreate,
+    AlertCreate
+)
 
 from video_processor import extract_frames
 from vehicle_detector import detect_vehicles
@@ -26,6 +39,13 @@ from report_service import (
 )
 
 from risk_predictor import predict_accident_risk
+
+from alert_service import (
+    create_alert,
+    get_all_alerts,
+    get_alert_by_id,
+    delete_alert
+)
 
 import os
 import shutil
@@ -79,11 +99,13 @@ def dashboard(
     total_vehicles = db.query(Vehicle).count()
     detected_violations = db.query(Violation).count()
     accident_alerts = db.query(Accident).count()
+    total_alerts = db.query(Alert).count()
 
     return {
         "total_vehicles": total_vehicles,
         "detected_violations": detected_violations,
-        "accident_alerts": accident_alerts
+        "accident_alerts": accident_alerts,
+        "total_alerts": total_alerts
     }
 
 
@@ -103,9 +125,14 @@ def dashboard_details(
         Accident.id.desc()
     ).limit(10).all()
 
+    alerts = db.query(Alert).order_by(
+        Alert.id.desc()
+    ).limit(10).all()
+
     recent_vehicles = []
     recent_violations = []
     recent_accidents = []
+    recent_alerts = []
 
     for vehicle in vehicles:
         recent_vehicles.append({
@@ -132,10 +159,21 @@ def dashboard_details(
             "timestamp": str(accident.timestamp)
         })
 
+    for alert in alerts:
+        recent_alerts.append({
+            "id": alert.id,
+            "alert_type": alert.alert_type,
+            "severity": alert.severity,
+            "message": alert.message,
+            "status": alert.status,
+            "created_at": str(alert.created_at)
+        })
+
     return {
         "recent_vehicles": recent_vehicles,
         "recent_violations": recent_violations,
-        "recent_accidents": recent_accidents
+        "recent_accidents": recent_accidents,
+        "recent_alerts": recent_alerts
     }
 
 
@@ -337,6 +375,91 @@ def get_all_accidents(
 
 
 # =====================================================
+# ALERTS
+# =====================================================
+
+@app.post("/alerts/test")
+def create_test_alert(
+    db: Session = Depends(get_db)
+):
+    alert = create_alert(
+        db,
+        "TEST_ALERT",
+        "MEDIUM",
+        "This is a test alert"
+    )
+
+    return {
+        "id": alert.id,
+        "message": "Test alert created"
+    }
+
+
+@app.get("/alerts")
+def get_alerts(
+    db: Session = Depends(get_db)
+):
+    alerts = get_all_alerts(db)
+
+    return [
+        {
+            "id": alert.id,
+            "alert_type": alert.alert_type,
+            "severity": alert.severity,
+            "message": alert.message,
+            "status": alert.status,
+            "created_at": str(alert.created_at)
+        }
+        for alert in alerts
+    ]
+
+
+@app.get("/alerts/{alert_id}")
+def get_alert(
+    alert_id: int,
+    db: Session = Depends(get_db)
+):
+    alert = get_alert_by_id(
+        db,
+        alert_id
+    )
+
+    if not alert:
+        return {
+            "error": "Alert not found"
+        }
+
+    return {
+        "id": alert.id,
+        "alert_type": alert.alert_type,
+        "severity": alert.severity,
+        "message": alert.message,
+        "status": alert.status,
+        "created_at": str(alert.created_at)
+    }
+
+
+@app.delete("/alerts/{alert_id}")
+def remove_alert(
+    alert_id: int,
+    db: Session = Depends(get_db)
+):
+    deleted = delete_alert(
+        db,
+        alert_id
+    )
+
+    if not deleted:
+        return {
+            "error": "Alert not found"
+        }
+
+    return {
+        "message": "Alert deleted"
+    }
+
+
+# =====================================================
 # ML RISK PREDICTION
 # =====================================================
 
@@ -348,7 +471,8 @@ def predict_risk(
     rainfall: int,
     visibility: int,
     speed_avg: int,
-    junction_score: int
+    junction_score: int,
+    db: Session = Depends(get_db)
 ):
     prediction = predict_accident_risk(
         hour,
@@ -361,6 +485,14 @@ def predict_risk(
     )
 
     risk_level = "HIGH" if prediction == 1 else "LOW"
+
+    if prediction == 1:
+        create_alert(
+            db,
+            "ACCIDENT_RISK",
+            "HIGH",
+            "High accident risk detected"
+        )
 
     return {
         "prediction": prediction,
