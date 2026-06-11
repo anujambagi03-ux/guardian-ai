@@ -9,7 +9,8 @@ from models import (
     Vehicle,
     Violation,
     Accident,
-    Alert
+    Alert,
+    DetectionFrame
 )
 
 from schemas import (
@@ -45,6 +46,12 @@ from alert_service import (
     get_all_alerts,
     get_alert_by_id,
     delete_alert
+)
+
+from cv_service import (
+    get_cv_status,
+    simulate_detection,
+    get_detections
 )
 
 import os
@@ -323,6 +330,27 @@ def upload_video(
         "accident_analysis": accident_analysis
     }
 
+# =====================================================
+# COMPUTER VISION
+# =====================================================
+
+@app.get("/cv/status")
+def cv_status():
+    return get_cv_status()
+
+
+@app.post("/cv/simulate")
+def cv_simulate(
+    db: Session = Depends(get_db)
+):
+    return simulate_detection(db)
+
+
+@app.get("/cv/detections")
+def cv_detections(
+    db: Session = Depends(get_db)
+):
+    return get_detections(db)
 
 # =====================================================
 # VEHICLES

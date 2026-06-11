@@ -50,3 +50,22 @@ class Alert(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+class DetectionFrame(Base):
+    __tablename__ = "detection_frames"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    frame_id = Column(String)
+
+    vehicle_count = Column(Integer)
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
