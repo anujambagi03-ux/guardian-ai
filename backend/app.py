@@ -52,7 +52,8 @@ from cv_service import (
     get_cv_status,
     simulate_detection,
     get_detections,
-    get_cv_analytics
+    get_cv_analytics,
+    save_real_detection
 )
 
 import os
@@ -303,7 +304,16 @@ def upload_video(
 
     save_detected_vehicles(
         vehicle_analysis
+    )   
+
+    db = SessionLocal()
+
+    save_real_detection(
+    db,
+    vehicle_analysis
     )
+
+    db.close()
 
     violation_analysis = detect_violations(
         vehicle_analysis

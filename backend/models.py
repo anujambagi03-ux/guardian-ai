@@ -9,7 +9,10 @@ class Vehicle(Base):
     id = Column(Integer, primary_key=True, index=True)
     vehicle_number = Column(String, unique=True)
     vehicle_type = Column(String)
-    detection_time = Column(DateTime, default=datetime.utcnow)
+    detection_time = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
 
 
 class Violation(Base):
@@ -19,7 +22,10 @@ class Violation(Base):
     vehicle_number = Column(String)
     violation_type = Column(String)
     location = Column(String)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
 
 
 class Accident(Base):
@@ -28,15 +34,23 @@ class Accident(Base):
     id = Column(Integer, primary_key=True, index=True)
     location = Column(String)
     severity = Column(String)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
 
 
 class Alert(Base):
     __tablename__ = "alerts"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
     alert_type = Column(String)
+
     severity = Column(String)
 
     message = Column(String)
@@ -64,6 +78,26 @@ class DetectionFrame(Base):
     frame_id = Column(String)
 
     vehicle_count = Column(Integer)
+
+    cars = Column(
+        Integer,
+        default=0
+    )
+
+    trucks = Column(
+        Integer,
+        default=0
+    )
+
+    buses = Column(
+        Integer,
+        default=0
+    )
+
+    motorcycles = Column(
+        Integer,
+        default=0
+    )
 
     timestamp = Column(
         DateTime,
