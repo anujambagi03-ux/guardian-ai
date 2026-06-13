@@ -56,3 +56,41 @@ def get_detections(
         })
 
     return result
+
+
+def get_cv_analytics(
+    db: Session
+):
+    frames = db.query(
+        DetectionFrame
+    ).all()
+
+    total_frames = len(frames)
+
+    total_vehicles = sum(
+        frame.vehicle_count
+        for frame in frames
+    )
+
+    avg_vehicles = 0
+
+    if total_frames > 0:
+        avg_vehicles = round(
+            total_vehicles / total_frames,
+            2
+        )
+
+    risk_level = "LOW"
+
+    if avg_vehicles >= 10:
+        risk_level = "HIGH"
+
+    elif avg_vehicles >= 5:
+        risk_level = "MEDIUM"
+
+    return {
+        "total_frames": total_frames,
+        "total_vehicles": total_vehicles,
+        "average_vehicles": avg_vehicles,
+        "risk_level": risk_level
+    }

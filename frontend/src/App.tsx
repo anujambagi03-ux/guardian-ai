@@ -11,6 +11,7 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Monitoring from "./pages/Monitoring";
 
+
 function App() {
   return (
     <BrowserRouter>

@@ -51,7 +51,8 @@ from alert_service import (
 from cv_service import (
     get_cv_status,
     simulate_detection,
-    get_detections
+    get_detections,
+    get_cv_analytics
 )
 
 import os
@@ -345,12 +346,18 @@ def cv_simulate(
 ):
     return simulate_detection(db)
 
-
 @app.get("/cv/detections")
 def cv_detections(
     db: Session = Depends(get_db)
 ):
     return get_detections(db)
+
+
+@app.get("/cv/analytics")
+def cv_analytics(
+    db: Session = Depends(get_db)
+):
+    return get_cv_analytics(db)
 
 # =====================================================
 # VEHICLES
