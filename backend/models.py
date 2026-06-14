@@ -9,6 +9,7 @@ class Vehicle(Base):
     id = Column(Integer, primary_key=True, index=True)
     vehicle_number = Column(String, unique=True)
     vehicle_type = Column(String)
+
     detection_time = Column(
         DateTime,
         default=datetime.utcnow
@@ -19,9 +20,13 @@ class Violation(Base):
     __tablename__ = "violations"
 
     id = Column(Integer, primary_key=True, index=True)
+
     vehicle_number = Column(String)
+
     violation_type = Column(String)
+
     location = Column(String)
+
     timestamp = Column(
         DateTime,
         default=datetime.utcnow
@@ -32,8 +37,11 @@ class Accident(Base):
     __tablename__ = "accidents"
 
     id = Column(Integer, primary_key=True, index=True)
+
     location = Column(String)
+
     severity = Column(String)
+
     timestamp = Column(
         DateTime,
         default=datetime.utcnow
@@ -124,6 +132,48 @@ class TrackedVehicle(Base):
     confidence = Column(String)
 
     created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+
+class TrafficFlow(Base):
+    __tablename__ = "traffic_flow"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    total_vehicles = Column(
+        Integer,
+        default=0
+    )
+
+    cars = Column(
+        Integer,
+        default=0
+    )
+
+    trucks = Column(
+        Integer,
+        default=0
+    )
+
+    buses = Column(
+        Integer,
+        default=0
+    )
+
+    motorcycles = Column(
+        Integer,
+        default=0
+    )
+
+    traffic_status = Column(String)
+
+    timestamp = Column(
         DateTime,
         default=datetime.utcnow
     )

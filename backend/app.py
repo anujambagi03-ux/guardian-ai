@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from database import engine, SessionLocal
+from traffic_flow_service import (
+    generate_traffic_flow
+)
 
 from models import (
     Base,
@@ -10,6 +13,7 @@ from models import (
     Violation,
     Accident,
     Alert,
+    TrafficFlow,
     DetectionFrame
 )
 
@@ -471,6 +475,49 @@ def get_all_vehicles(
 
     return result
 
+# =====================================================
+# TRAFFIC FLOW ANALYTICS
+# =====================================================
+
+@app.post("/traffic-flow/generate")
+def traffic_flow_generate(
+    db: Session = Depends(get_db)
+):
+
+    flow = generate_traffic_flow(db)
+
+    return {
+        "message": "Traffic flow generated",
+        "traffic_status": flow.traffic_status,
+        "total_vehicles": flow.total_vehicles
+    }
+
+
+@app.get("/traffic-flow")
+def get_traffic_flow(
+    db: Session = Depends(get_db)
+):
+
+    records = db.query(
+        TrafficFlow
+    ).all()
+
+    result = []
+
+    for row in records:
+
+        result.append({
+            "id": row.id,
+            "total_vehicles": row.total_vehicles,
+            "cars": row.cars,
+            "trucks": row.trucks,
+            "buses": row.buses,
+            "motorcycles": row.motorcycles,
+            "traffic_status": row.traffic_status,
+            "timestamp": str(row.timestamp)
+        })
+
+    return result
 
 # =====================================================
 # VIOLATIONS
