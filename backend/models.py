@@ -177,3 +177,26 @@ class TrafficFlow(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+class NearMissEvent(Base):
+    __tablename__ = "near_miss_events"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    vehicle_a = Column(String)
+
+    vehicle_b = Column(String)
+
+    distance = Column(Integer)
+
+    risk_level = Column(String)
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

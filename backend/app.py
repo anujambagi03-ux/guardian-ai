@@ -6,6 +6,11 @@ from database import engine, SessionLocal
 from traffic_flow_service import (
     generate_traffic_flow
 )
+from near_miss_service import (
+    generate_near_miss_event,
+    get_near_miss_events,
+    get_near_miss_analytics
+)
 
 from models import (
     Base,
@@ -14,7 +19,8 @@ from models import (
     Accident,
     Alert,
     TrafficFlow,
-    DetectionFrame
+    DetectionFrame,
+    NearMissEvent
 )
 
 from schemas import (
@@ -697,3 +703,49 @@ def predict_risk(
         "speed_avg": speed_avg,
         "junction_score": junction_score
     }
+
+@app.post("/near-miss/generate")
+def generate_near_miss(
+    db: Session = Depends(get_db)
+):
+
+    event = generate_near_miss_event(db)
+
+    return {
+        "message": "Near miss detected",
+        "vehicle_a": event.vehicle_a,
+        "vehicle_b": event.vehicle_b,
+        "distance": event.distance,
+        "risk_level": event.risk_level
+    }
+
+
+@app.get("/near-miss")
+def get_near_miss(
+    db: Session = Depends(get_db)
+):
+
+    events = get_near_miss_events(db)
+
+    result = []
+
+    for event in events:
+
+        result.append({
+            "id": event.id,
+            "vehicle_a": event.vehicle_a,
+            "vehicle_b": event.vehicle_b,
+            "distance": event.distance,
+            "risk_level": event.risk_level,
+            "timestamp": str(event.timestamp)
+        })
+
+    return result
+
+
+@app.get("/near-miss/analytics")
+def near_miss_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_near_miss_analytics(db)
