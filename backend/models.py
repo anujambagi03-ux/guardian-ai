@@ -245,4 +245,35 @@ class EmergencyResponse(Base):
     timestamp = Column(
         DateTime,
         default=datetime.utcnow
-    )    
+    ) 
+class Incident(Base):
+    __tablename__ = "incidents"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    incident_id = Column(
+        String,
+        unique=True
+    )
+
+    risk_level = Column(String)
+
+    emergency_level = Column(String)
+
+    priority = Column(String)
+
+    assigned_team = Column(String)
+
+    status = Column(
+        String,
+        default="OPEN"
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )   

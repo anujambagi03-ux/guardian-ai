@@ -22,6 +22,11 @@ from emergency_service import (
     get_emergency_analytics
 )
 
+from incident_service import (
+    generate_incident,
+    get_incidents,
+    get_incident_analytics
+)
 from models import (
     Base,
     Vehicle,
@@ -32,7 +37,8 @@ from models import (
     DetectionFrame,
     NearMissEvent,
     AccidentRisk,
-    EmergencyResponse
+    EmergencyResponse,
+    Incident
 )
 
 from schemas import (
@@ -876,3 +882,74 @@ def emergency_analytics(
 ):
 
     return get_emergency_analytics(db)
+
+@app.post(
+    "/incident/generate"
+)
+def create_incident(
+    db: Session = Depends(get_db)
+):
+
+    incident = generate_incident(db)
+
+    if not incident:
+
+        return {
+            "message":
+            "No emergency data found"
+        }
+
+    return {
+        "message":
+        "Incident generated",
+        "incident_id":
+        incident.incident_id,
+        "priority":
+        incident.priority,
+        "assigned_team":
+        incident.assigned_team
+    }
+
+
+@app.get(
+    "/incident"
+)
+def get_incident_data(
+    db: Session = Depends(get_db)
+):
+
+    incidents = get_incidents(db)
+
+    result = []
+
+    for incident in incidents:
+
+        result.append({
+            "id": incident.id,
+            "incident_id":
+            incident.incident_id,
+            "risk_level":
+            incident.risk_level,
+            "emergency_level":
+            incident.emergency_level,
+            "priority":
+            incident.priority,
+            "assigned_team":
+            incident.assigned_team,
+            "status":
+            incident.status,
+            "created_at":
+            str(incident.created_at)
+        })
+
+    return result
+
+
+@app.get(
+    "/incident/analytics"
+)
+def incident_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_incident_analytics(db)
