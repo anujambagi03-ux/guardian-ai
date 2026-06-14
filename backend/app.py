@@ -17,6 +17,11 @@ from risk_service import (
     get_risk_analytics
 )
 
+from emergency_service import (
+    generate_emergency_response,
+    get_emergency_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -26,7 +31,8 @@ from models import (
     TrafficFlow,
     DetectionFrame,
     NearMissEvent,
-    AccidentRisk
+    AccidentRisk,
+    EmergencyResponse
 )
 
 from schemas import (
@@ -808,3 +814,65 @@ def risk_analytics(
 ):
 
     return get_risk_analytics(db)
+
+# =====================================================
+# EMERGENCY RESPONSE SYSTEM
+# =====================================================
+
+@app.post("/emergency/generate")
+def generate_emergency(
+    db: Session = Depends(get_db)
+):
+
+    response = generate_emergency_response(db)
+
+    if not response:
+
+        return {
+            "message": "No risk data found"
+        }
+
+    return {
+        "message": "Emergency response generated",
+        "emergency_level": response.emergency_level,
+        "response_action": response.response_action,
+        "estimated_time": response.estimated_time
+    }
+
+
+@app.get("/emergency")
+def get_emergency(
+    db: Session = Depends(get_db)
+):
+
+    responses = db.query(
+        EmergencyResponse
+    ).all()
+
+    result = []
+
+    for response in responses:
+
+        result.append({
+            "id": response.id,
+            "emergency_level":
+                response.emergency_level,
+            "response_action":
+                response.response_action,
+            "estimated_time":
+                response.estimated_time,
+            "risk_score":
+                response.risk_score,
+            "timestamp":
+                str(response.timestamp)
+        })
+
+    return result
+
+
+@app.get("/emergency/analytics")
+def emergency_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_emergency_analytics(db)

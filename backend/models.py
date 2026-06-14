@@ -225,3 +225,24 @@ class AccidentRisk(Base):
         DateTime,
         default=datetime.utcnow
     )
+class EmergencyResponse(Base):
+    __tablename__ = "emergency_responses"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    emergency_level = Column(String)
+
+    response_action = Column(String)
+
+    estimated_time = Column(Integer)
+
+    risk_score = Column(Integer)
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )    
