@@ -200,3 +200,28 @@ class NearMissEvent(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+class AccidentRisk(Base):
+    __tablename__ = "accident_risk"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    risk_score = Column(Integer)
+
+    risk_level = Column(String)
+
+    traffic_status = Column(String)
+
+    near_miss_count = Column(Integer)
+
+    recommendation = Column(String)
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

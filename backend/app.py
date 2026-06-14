@@ -12,6 +12,11 @@ from near_miss_service import (
     get_near_miss_analytics
 )
 
+from risk_service import (
+    generate_risk_score,
+    get_risk_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -20,7 +25,8 @@ from models import (
     Alert,
     TrafficFlow,
     DetectionFrame,
-    NearMissEvent
+    NearMissEvent,
+    AccidentRisk
 )
 
 from schemas import (
@@ -749,3 +755,56 @@ def near_miss_analytics(
 ):
 
     return get_near_miss_analytics(db)
+
+@app.post("/risk/generate")
+def generate_risk(
+    db: Session = Depends(get_db)
+):
+
+    risk = generate_risk_score(db)
+
+    if not risk:
+        return {
+            "message": "No traffic data found"
+        }
+
+    return {
+        "message": "Risk generated",
+        "risk_score": risk.risk_score,
+        "risk_level": risk.risk_level,
+        "recommendation": risk.recommendation
+    }
+
+
+@app.get("/risk")
+def get_risk(
+    db: Session = Depends(get_db)
+):
+
+    risks = db.query(
+        AccidentRisk
+    ).all()
+
+    result = []
+
+    for risk in risks:
+
+        result.append({
+            "id": risk.id,
+            "risk_score": risk.risk_score,
+            "risk_level": risk.risk_level,
+            "traffic_status": risk.traffic_status,
+            "near_miss_count": risk.near_miss_count,
+            "recommendation": risk.recommendation,
+            "timestamp": str(risk.timestamp)
+        })
+
+    return result
+
+
+@app.get("/risk/analytics")
+def risk_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_risk_analytics(db)
