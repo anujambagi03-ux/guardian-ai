@@ -56,6 +56,11 @@ from cv_service import (
     save_real_detection
 )
 
+from tracking_service import (
+    create_tracking_records,
+    get_tracking_data
+)
+
 import os
 import shutil
 
@@ -309,9 +314,17 @@ def upload_video(
     db = SessionLocal()
 
     save_real_detection(
+        db,
+        vehicle_analysis
+    )
+
+   
+
+    create_tracking_records(
     db,
     vehicle_analysis
-    )
+   )
+
 
     db.close()
 
@@ -369,6 +382,52 @@ def cv_analytics(
 ):
     return get_cv_analytics(db)
 
+# =====================================================
+# VEHICLE TRACKING
+# =====================================================
+
+@app.get("/tracking")
+def tracking_data(
+    db: Session = Depends(get_db)
+):
+    return get_tracking_data(db)
+
+
+@app.get("/tracking/analytics")
+def tracking_analytics(
+    db: Session = Depends(get_db)
+):
+    records = get_tracking_data(db)
+
+    total = len(records)
+
+    cars = len([
+        x for x in records
+        if x["vehicle_type"] == "car"
+    ])
+
+    trucks = len([
+        x for x in records
+        if x["vehicle_type"] == "truck"
+    ])
+
+    buses = len([
+        x for x in records
+        if x["vehicle_type"] == "bus"
+    ])
+
+    motorcycles = len([
+        x for x in records
+        if x["vehicle_type"] == "motorcycle"
+    ])
+
+    return {
+        "total_tracked": total,
+        "cars": cars,
+        "trucks": trucks,
+        "buses": buses,
+        "motorcycles": motorcycles
+    }
 # =====================================================
 # VEHICLES
 # =====================================================

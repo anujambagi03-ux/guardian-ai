@@ -103,3 +103,27 @@ class DetectionFrame(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+class TrackedVehicle(Base):
+    __tablename__ = "tracked_vehicles"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    tracking_id = Column(
+        String,
+        unique=True
+    )
+
+    vehicle_type = Column(String)
+
+    confidence = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
