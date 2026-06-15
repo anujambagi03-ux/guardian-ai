@@ -303,3 +303,27 @@ class Dispatch(Base):
         DateTime,
         default=datetime.utcnow
     )
+class ResponseTracking(Base):
+    __tablename__ = "response_tracking"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    response_id = Column(
+        String,
+        unique=True
+    )
+
+    dispatch_id = Column(String)
+
+    incident_id = Column(String)
+
+    response_status = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

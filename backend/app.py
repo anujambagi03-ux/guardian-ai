@@ -33,6 +33,13 @@ from dispatch_service import (
     get_dispatches,
     get_dispatch_analytics
 )
+
+from response_service import (
+    generate_response_tracking,
+    get_response_tracking,
+    get_response_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -45,7 +52,8 @@ from models import (
     AccidentRisk,
     EmergencyResponse,
     Incident,
-    Dispatch
+    Dispatch,
+    ResponseTracking
 )
 
 from schemas import (
@@ -1033,3 +1041,72 @@ def dispatch_analytics(
 ):
 
     return get_dispatch_analytics(db)
+# =====================================================
+# RESPONSE TRACKING MANAGEMENT
+# =====================================================
+
+@app.post(
+    "/response/generate"
+)
+def create_response(
+    db: Session = Depends(get_db)
+):
+
+    response = generate_response_tracking(db)
+
+    if not response:
+
+        return {
+            "message":
+            "No dispatch data found"
+        }
+
+    return {
+        "message":
+        "Response tracking created",
+        "response_id":
+        response.response_id,
+        "status":
+        response.response_status
+    }
+
+
+@app.get(
+    "/response"
+)
+def get_response_data(
+    db: Session = Depends(get_db)
+):
+
+    responses = get_response_tracking(db)
+
+    result = []
+
+    for response in responses:
+
+        result.append({
+            "id":
+            response.id,
+            "response_id":
+            response.response_id,
+            "dispatch_id":
+            response.dispatch_id,
+            "incident_id":
+            response.incident_id,
+            "response_status":
+            response.response_status,
+            "created_at":
+            str(response.created_at)
+        })
+
+    return result
+
+
+@app.get(
+    "/response/analytics"
+)
+def response_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_response_analytics(db)
