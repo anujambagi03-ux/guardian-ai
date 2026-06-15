@@ -355,3 +355,29 @@ class ResolutionCase(Base):
         DateTime,
         default=datetime.utcnow
     )
+class ResourceUnit(Base):
+    __tablename__ = "resource_units"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    resource_id = Column(
+        String,
+        unique=True
+    )
+
+    resource_type = Column(String)
+
+    availability_status = Column(String)
+
+    current_location = Column(String)
+
+    utilization_score = Column(Integer)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

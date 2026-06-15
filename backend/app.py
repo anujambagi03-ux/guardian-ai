@@ -46,6 +46,12 @@ from resolution_service import (
     get_resolution_analytics
 )
 
+from resource_service import (
+    generate_resource_allocation,
+    get_resources,
+    get_resource_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -1192,3 +1198,53 @@ def resolution_analytics(
 ):
 
     return get_resolution_analytics(db)
+# ==========================================
+# DAY 25
+# RESOURCE OPTIMIZATION ENGINE
+# ==========================================
+
+@app.post("/resource/generate")
+def create_resource(
+    db: Session = Depends(get_db)
+):
+
+    resource = (
+        generate_resource_allocation(db)
+    )
+
+    if not resource:
+
+        return {
+            "message":
+            "No resolution case found"
+        }
+
+    return {
+        "message":
+        "Resource allocated",
+
+        "resource_id":
+        resource.resource_id,
+
+        "resource_type":
+        resource.resource_type,
+
+        "availability":
+        resource.availability_status
+    }
+
+
+@app.get("/resource")
+def get_resource_data(
+    db: Session = Depends(get_db)
+):
+
+    return get_resources(db)
+
+
+@app.get("/resource/analytics")
+def resource_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_resource_analytics(db)
