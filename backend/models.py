@@ -431,3 +431,29 @@ class TrafficTrend(Base):
         DateTime,
         default=datetime.utcnow
     )
+class AIRecommendation(Base):
+    __tablename__ = "ai_recommendations"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    recommendation_id = Column(
+        String,
+        unique=True
+    )
+
+    traffic_status = Column(String)
+
+    risk_level = Column(String)
+
+    recommendation = Column(String)
+
+    priority = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

@@ -69,6 +69,12 @@ from traffic_analytics_service import (
     get_traffic_summary
 )
 
+from recommendation_service import (
+    generate_recommendation,
+    get_recommendations,
+    get_recommendation_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -1392,4 +1398,47 @@ def traffic_summary(
 
     return (
         get_traffic_summary(db)
+    )
+@app.post("/recommendation/generate")
+def create_recommendation(
+    db: Session = Depends(get_db)
+):
+    recommendation = (
+        generate_recommendation(db)
+    )
+
+    if not recommendation:
+        return {
+            "message":
+            "Traffic or Risk data not found"
+        }
+
+    return {
+        "message":
+        "Recommendation generated",
+
+        "recommendation_id":
+        recommendation.recommendation_id,
+
+        "priority":
+        recommendation.priority,
+
+        "recommendation":
+        recommendation.recommendation
+    }
+
+
+@app.get("/recommendation")
+def get_recommendation_data(
+    db: Session = Depends(get_db)
+):
+    return get_recommendations(db)
+
+
+@app.get("/recommendation/analytics")
+def recommendation_analytics(
+    db: Session = Depends(get_db)
+):
+    return (
+        get_recommendation_analytics(db)
     )
