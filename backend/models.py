@@ -327,3 +327,31 @@ class ResponseTracking(Base):
         DateTime,
         default=datetime.utcnow
     )
+class ResolutionCase(Base):
+    __tablename__ = "resolution_cases"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    resolution_id = Column(
+        String,
+        unique=True
+    )
+
+    response_id = Column(String)
+
+    incident_id = Column(String)
+
+    resolution_status = Column(String)
+
+    resolution_notes = Column(String)
+
+    closure_time_minutes = Column(Integer)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

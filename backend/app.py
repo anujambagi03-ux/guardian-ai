@@ -40,6 +40,12 @@ from response_service import (
     get_response_analytics
 )
 
+from resolution_service import (
+    create_resolution,
+    get_resolutions,
+    get_resolution_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -53,7 +59,8 @@ from models import (
     EmergencyResponse,
     Incident,
     Dispatch,
-    ResponseTracking
+    ResponseTracking,
+    ResolutionCase
 )
 
 from schemas import (
@@ -1110,3 +1117,78 @@ def response_analytics(
 ):
 
     return get_response_analytics(db)
+# =====================================================
+# CASE RESOLUTION MANAGEMENT
+# =====================================================
+
+@app.post(
+    "/resolution/generate"
+)
+def generate_resolution(
+    db: Session = Depends(get_db)
+):
+
+    resolution = create_resolution(db)
+
+    if not resolution:
+
+        return {
+            "message":
+            "No response tracking data found"
+        }
+
+    return {
+        "message":
+        "Case resolution created",
+        "resolution_id":
+        resolution.resolution_id,
+        "status":
+        resolution.resolution_status,
+        "closure_time":
+        resolution.closure_time_minutes
+    }
+
+
+@app.get(
+    "/resolution"
+)
+def get_resolution_data(
+    db: Session = Depends(get_db)
+):
+
+    resolutions = get_resolutions(db)
+
+    result = []
+
+    for resolution in resolutions:
+
+        result.append({
+            "id":
+            resolution.id,
+            "resolution_id":
+            resolution.resolution_id,
+            "response_id":
+            resolution.response_id,
+            "incident_id":
+            resolution.incident_id,
+            "resolution_status":
+            resolution.resolution_status,
+            "resolution_notes":
+            resolution.resolution_notes,
+            "closure_time_minutes":
+            resolution.closure_time_minutes,
+            "created_at":
+            str(resolution.created_at)
+        })
+
+    return result
+
+
+@app.get(
+    "/resolution/analytics"
+)
+def resolution_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_resolution_analytics(db)
