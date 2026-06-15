@@ -27,6 +27,12 @@ from incident_service import (
     get_incidents,
     get_incident_analytics
 )
+
+from dispatch_service import (
+    generate_dispatch,
+    get_dispatches,
+    get_dispatch_analytics
+)
 from models import (
     Base,
     Vehicle,
@@ -38,7 +44,8 @@ from models import (
     NearMissEvent,
     AccidentRisk,
     EmergencyResponse,
-    Incident
+    Incident,
+    Dispatch
 )
 
 from schemas import (
@@ -953,3 +960,76 @@ def incident_analytics(
 ):
 
     return get_incident_analytics(db)
+# =====================================================
+# RESOURCE DISPATCH MANAGEMENT
+# =====================================================
+
+@app.post(
+    "/dispatch/generate"
+)
+def create_dispatch(
+    db: Session = Depends(get_db)
+):
+
+    dispatch = generate_dispatch(db)
+
+    if not dispatch:
+
+        return {
+            "message":
+            "No incident data found"
+        }
+
+    return {
+        "message":
+        "Dispatch created",
+        "dispatch_id":
+        dispatch.dispatch_id,
+        "vehicle_type":
+        dispatch.vehicle_type,
+        "personnel_count":
+        dispatch.personnel_count
+    }
+
+
+@app.get(
+    "/dispatch"
+)
+def get_dispatch_data(
+    db: Session = Depends(get_db)
+):
+
+    dispatches = get_dispatches(db)
+
+    result = []
+
+    for dispatch in dispatches:
+
+        result.append({
+            "id":
+            dispatch.id,
+            "dispatch_id":
+            dispatch.dispatch_id,
+            "incident_id":
+            dispatch.incident_id,
+            "vehicle_type":
+            dispatch.vehicle_type,
+            "personnel_count":
+            dispatch.personnel_count,
+            "dispatch_status":
+            dispatch.dispatch_status,
+            "created_at":
+            str(dispatch.created_at)
+        })
+
+    return result
+
+
+@app.get(
+    "/dispatch/analytics"
+)
+def dispatch_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return get_dispatch_analytics(db)

@@ -277,3 +277,29 @@ class Incident(Base):
         DateTime,
         default=datetime.utcnow
     )   
+class Dispatch(Base):
+    __tablename__ = "dispatches"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    dispatch_id = Column(
+        String,
+        unique=True
+    )
+
+    incident_id = Column(String)
+
+    vehicle_type = Column(String)
+
+    personnel_count = Column(Integer)
+
+    dispatch_status = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
