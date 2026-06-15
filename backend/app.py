@@ -52,6 +52,11 @@ from resource_service import (
     get_resource_analytics
 )
 
+from dashboard_service import (
+    get_dashboard_overview,
+    get_system_summary
+)
+
 from models import (
     Base,
     Vehicle,
@@ -1248,3 +1253,22 @@ def resource_analytics(
 ):
 
     return get_resource_analytics(db)
+# ==========================================
+# DAY 26
+# COMMAND CENTER DASHBOARD
+# ==========================================
+
+@app.get("/dashboard/overview")
+def dashboard_overview(
+    db: Session = Depends(get_db)
+):
+
+    return get_dashboard_overview(db)
+
+
+@app.get("/dashboard/system-summary")
+def dashboard_summary(
+    db: Session = Depends(get_db)
+):
+
+    return get_system_summary(db)
