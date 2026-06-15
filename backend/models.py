@@ -457,3 +457,29 @@ class AIRecommendation(Base):
         DateTime,
         default=datetime.utcnow
     )
+class AIDecision(Base):
+    __tablename__ = "ai_decisions"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    decision_id = Column(
+        String,
+        unique=True
+    )
+
+    decision_type = Column(String)
+
+    priority = Column(String)
+
+    action_plan = Column(String)
+
+    execution_status = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

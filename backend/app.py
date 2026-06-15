@@ -75,6 +75,12 @@ from recommendation_service import (
     get_recommendation_analytics
 )
 
+from decision_service import (
+    generate_decision,
+    get_decisions,
+    get_decision_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -90,7 +96,8 @@ from models import (
     Dispatch,
     ResponseTracking,
     ResolutionCase,
-    TrafficTrend
+    TrafficTrend,
+    AIDecision
 )
 
 from schemas import (
@@ -1441,4 +1448,36 @@ def recommendation_analytics(
 ):
     return (
         get_recommendation_analytics(db)
+    )
+
+@app.post("/decision/generate")
+def create_ai_decision(
+    db: Session = Depends(get_db)
+):
+
+    decision = generate_decision(db)
+
+    if "error" in decision:
+        return decision
+
+    return decision
+
+
+@app.get("/decision")
+def get_decision_data(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_decisions(db)
+    )
+
+
+@app.get("/decision/analytics")
+def decision_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_decision_analytics(db)
     )
