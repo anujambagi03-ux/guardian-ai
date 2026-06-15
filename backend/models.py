@@ -381,3 +381,29 @@ class ResourceUnit(Base):
         DateTime,
         default=datetime.utcnow
     )
+class TrafficPrediction(Base):
+    __tablename__ = "traffic_predictions"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    prediction_id = Column(
+        String,
+        unique=True
+    )
+
+    current_traffic = Column(String)
+
+    predicted_traffic = Column(String)
+
+    confidence_score = Column(Integer)
+
+    prediction_window = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

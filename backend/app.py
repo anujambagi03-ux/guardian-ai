@@ -57,6 +57,12 @@ from dashboard_service import (
     get_system_summary
 )
 
+from prediction_service import (
+    generate_prediction,
+    get_predictions,
+    get_prediction_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -1272,3 +1278,58 @@ def dashboard_summary(
 ):
 
     return get_system_summary(db)
+
+@app.post("/prediction/generate")
+def create_prediction(
+    db: Session = Depends(get_db)
+):
+
+    prediction = (
+        generate_prediction(db)
+    )
+
+    if not prediction:
+
+        return {
+            "message":
+            "No traffic data available"
+        }
+
+    return {
+        "message":
+        "Prediction generated",
+
+        "prediction_id":
+        prediction.prediction_id,
+
+        "current_traffic":
+        prediction.current_traffic,
+
+        "predicted_traffic":
+        prediction.predicted_traffic,
+
+        "confidence":
+        prediction.confidence_score
+    }
+
+
+@app.get("/prediction")
+def get_prediction_data(
+    db: Session = Depends(get_db)
+):
+
+    predictions = (
+        get_predictions(db)
+    )
+
+    return predictions
+
+
+@app.get("/prediction/analytics")
+def prediction_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_prediction_analytics(db)
+    )
