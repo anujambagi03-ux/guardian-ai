@@ -407,3 +407,27 @@ class TrafficPrediction(Base):
         DateTime,
         default=datetime.utcnow
     )
+class TrafficTrend(Base):
+    __tablename__ = "traffic_trends"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    trend_id = Column(
+        String,
+        unique=True
+    )
+
+    average_vehicle_count = Column(Integer)
+
+    traffic_status = Column(String)
+
+    trend_direction = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

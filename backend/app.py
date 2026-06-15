@@ -63,6 +63,12 @@ from prediction_service import (
     get_prediction_analytics
 )
 
+from traffic_analytics_service import (
+    generate_traffic_trend,
+    get_traffic_trends,
+    get_traffic_summary
+)
+
 from models import (
     Base,
     Vehicle,
@@ -77,7 +83,8 @@ from models import (
     Incident,
     Dispatch,
     ResponseTracking,
-    ResolutionCase
+    ResolutionCase,
+    TrafficTrend
 )
 
 from schemas import (
@@ -1332,4 +1339,57 @@ def prediction_analytics(
 
     return (
         get_prediction_analytics(db)
+    )
+
+@app.post("/traffic-analytics/generate")
+def create_traffic_trend(
+    db: Session = Depends(get_db)
+):
+
+    trend = (
+        generate_traffic_trend(db)
+    )
+
+    if not trend:
+
+        return {
+            "message":
+            "No traffic records found"
+        }
+
+    return {
+        "message":
+        "Traffic trend generated",
+
+        "trend_id":
+        trend.trend_id,
+
+        "average_vehicle_count":
+        trend.average_vehicle_count,
+
+        "traffic_status":
+        trend.traffic_status,
+
+        "trend_direction":
+        trend.trend_direction
+    }
+
+
+@app.get("/traffic-analytics")
+def get_traffic_trend_data(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_traffic_trends(db)
+    )
+
+
+@app.get("/traffic-analytics/summary")
+def traffic_summary(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_traffic_summary(db)
     )
