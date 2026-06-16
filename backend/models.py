@@ -649,3 +649,26 @@ class TemporalTrafficIntelligence(Base):
     peak_period = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class PredictiveIncidentIntelligence(Base):
+    __tablename__ = "predictive_incident_intelligence"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    prediction_id = Column(String, unique=True)
+
+    zone_id = Column(String)
+
+    predicted_hour = Column(Integer)
+
+    predicted_incidents = Column(Integer)
+
+    risk_score = Column(Integer)
+
+    severity_level = Column(String)
+
+    confidence_score = Column(Integer)
+
+    recommendation = Column(String)
+
+    created_at = Column(DateTime, default=datetime.utcnow)

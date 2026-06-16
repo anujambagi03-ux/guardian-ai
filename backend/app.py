@@ -101,6 +101,10 @@ from geographic_risk_service import (
 
 from temporal_traffic_service import generate_temporal_intelligence
 
+from predictive_incident_service import (
+    generate_predictive_incidents
+)
+
 from models import (
     Base,
     Vehicle,
@@ -122,7 +126,8 @@ from models import (
     Hotspot,
     GeographicRiskZone,
     RiskHeatmap,
-    TemporalTrafficIntelligence
+    TemporalTrafficIntelligence,
+    PredictiveIncidentIntelligence
 )
 
 from schemas import (
@@ -1721,3 +1726,53 @@ def temporal_analytics():
 
     finally:
         db.close()
+
+@app.post("/predictive/generate")
+def predictive_generate(db: Session = Depends(get_db)):
+
+    records = generate_predictive_incidents(db)
+
+    return {
+        "message": "Predictive incident intelligence generated",
+        "records": records
+    }
+
+@app.get("/predictive")
+def get_predictive(
+    db: Session = Depends(get_db)
+):
+
+    return db.query(
+        PredictiveIncidentIntelligence
+    ).all()
+
+@app.get("/predictive/analytics")
+def predictive_analytics(
+    db: Session = Depends(get_db)
+):
+
+    data = db.query(
+        PredictiveIncidentIntelligence
+    ).all()
+
+    if not data:
+        return {}
+
+    high_risk = len(
+        [
+            x for x in data
+            if x.severity_level == "HIGH"
+        ]
+    )
+
+    avg_confidence = round(
+        sum(x.confidence_score for x in data)
+        / len(data),
+        2
+    )
+
+    return {
+        "total_predictions": len(data),
+        "high_risk_predictions": high_risk,
+        "average_confidence": avg_confidence
+    }
