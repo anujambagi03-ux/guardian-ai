@@ -98,6 +98,9 @@ from geographic_risk_service import (
     generate_zone_analytics,
     generate_heatmap
 )
+
+from temporal_traffic_service import generate_temporal_intelligence
+
 from models import (
     Base,
     Vehicle,
@@ -118,7 +121,8 @@ from models import (
     IncidentPattern,
     Hotspot,
     GeographicRiskZone,
-    RiskHeatmap
+    RiskHeatmap,
+    TemporalTrafficIntelligence
 )
 
 from schemas import (
@@ -1645,3 +1649,75 @@ def get_heatmap(
     return db.query(
         RiskHeatmap
     ).all()
+
+@app.post("/temporal/generate")
+def temporal_generate():
+
+    return generate_temporal_intelligence()
+
+@app.get("/temporal")
+def get_temporal():
+
+    db = SessionLocal()
+
+    try:
+
+        records = db.query(
+            TemporalTrafficIntelligence
+        ).all()
+
+        return [
+            {
+                "hour": r.hour_of_day,
+                "incident_count": r.incident_count,
+                "risk_score": r.risk_score,
+                "risk_level": r.risk_level,
+                "peak_period": r.peak_period
+            }
+            for r in records
+        ]
+
+    finally:
+        db.close()
+
+@app.get("/temporal/analytics")
+def temporal_analytics():
+
+    db = SessionLocal()
+
+    try:
+
+        records = db.query(
+            TemporalTrafficIntelligence
+        ).all()
+
+        if not records:
+
+            return {
+                "message": "No temporal data found"
+            }
+
+        peak = max(records, key=lambda x: x.risk_score)
+
+        high_risk_hours = [
+            r.hour_of_day
+            for r in records
+            if r.risk_level == "HIGH"
+        ]
+
+        low_risk_hours = [
+            r.hour_of_day
+            for r in records
+            if r.risk_level == "LOW"
+        ]
+
+        return {
+            "peak_hour": peak.hour_of_day,
+            "peak_risk_score": peak.risk_score,
+            "high_risk_hours": high_risk_hours,
+            "low_risk_hours": low_risk_hours,
+            "total_hours_analyzed": len(records)
+        }
+
+    finally:
+        db.close()

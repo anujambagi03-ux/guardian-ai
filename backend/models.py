@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime,  Float
 from datetime import datetime
 from database import Base
 
@@ -633,3 +633,19 @@ class RiskHeatmap(Base):
         DateTime,
         default=datetime.utcnow
     )
+class TemporalTrafficIntelligence(Base):
+    __tablename__ = "temporal_traffic_intelligence"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    hour_of_day = Column(Integer, nullable=False)
+
+    incident_count = Column(Integer, default=0)
+
+    risk_score = Column(Float, default=0)
+
+    risk_level = Column(String, default="LOW")
+
+    peak_period = Column(String, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
