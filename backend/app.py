@@ -87,6 +87,12 @@ from incident_pattern_service import (
     get_pattern_analytics
 )
 
+from hotspot_service import (
+    generate_hotspot,
+    get_hotspots,
+    get_hotspot_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -104,7 +110,8 @@ from models import (
     ResolutionCase,
     TrafficTrend,
     AIDecision,
-    IncidentPattern
+    IncidentPattern,
+    Hotspot
 )
 
 from schemas import (
@@ -1523,4 +1530,40 @@ def incident_pattern_analytics(
 
     return (
         get_pattern_analytics(db)
+    )
+
+# ==========================================
+# DAY 32
+# HOTSPOT INTELLIGENCE ENGINE
+# ==========================================
+
+@app.post("/hotspot/generate")
+def create_hotspot(
+    db: Session = Depends(get_db)
+):
+
+    hotspot = (
+        generate_hotspot(db)
+    )
+
+    return hotspot
+
+
+@app.get("/hotspot")
+def get_hotspot_data(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_hotspots(db)
+    )
+
+
+@app.get("/hotspot/analytics")
+def hotspot_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_hotspot_analytics(db)
     )

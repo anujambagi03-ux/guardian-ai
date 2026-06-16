@@ -513,3 +513,33 @@ class IncidentPattern(Base):
         DateTime,
         default=datetime.utcnow
     )
+class Hotspot(Base):
+    __tablename__ = "hotspots"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    hotspot_id = Column(
+        String,
+        unique=True
+    )
+
+    location = Column(String)
+
+    hotspot_type = Column(String)
+
+    incident_count = Column(Integer)
+
+    risk_score = Column(Integer)
+
+    severity_level = Column(String)
+
+    rank = Column(Integer)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
