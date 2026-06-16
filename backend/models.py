@@ -483,3 +483,33 @@ class AIDecision(Base):
         DateTime,
         default=datetime.utcnow
     )
+class IncidentPattern(Base):
+    __tablename__ = "incident_patterns"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    pattern_id = Column(
+        String,
+        unique=True
+    )
+
+    pattern_type = Column(String)
+
+    risk_level = Column(String)
+
+    incident_count = Column(Integer)
+
+    recommendation_count = Column(Integer)
+
+    decision_count = Column(Integer)
+
+    trend = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

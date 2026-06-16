@@ -81,6 +81,12 @@ from decision_service import (
     get_decision_analytics
 )
 
+from incident_pattern_service import (
+    generate_incident_pattern,
+    get_incident_patterns,
+    get_pattern_analytics
+)
+
 from models import (
     Base,
     Vehicle,
@@ -97,7 +103,8 @@ from models import (
     ResponseTracking,
     ResolutionCase,
     TrafficTrend,
-    AIDecision
+    AIDecision,
+    IncidentPattern
 )
 
 from schemas import (
@@ -1480,4 +1487,40 @@ def decision_analytics(
 
     return (
         get_decision_analytics(db)
+    )
+
+# ==========================================
+# DAY 31
+# INCIDENT PATTERN INTELLIGENCE ENGINE
+# ==========================================
+
+@app.post("/incident-pattern/generate")
+def create_incident_pattern(
+    db: Session = Depends(get_db)
+):
+
+    pattern = (
+        generate_incident_pattern(db)
+    )
+
+    return pattern
+
+
+@app.get("/incident-pattern")
+def get_pattern_data(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_incident_patterns(db)
+    )
+
+
+@app.get("/incident-pattern/analytics")
+def incident_pattern_analytics(
+    db: Session = Depends(get_db)
+):
+
+    return (
+        get_pattern_analytics(db)
     )
