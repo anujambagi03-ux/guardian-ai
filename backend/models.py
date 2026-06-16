@@ -543,3 +543,93 @@ class Hotspot(Base):
         DateTime,
         default=datetime.utcnow
     )
+class GeographicRiskZone(Base):
+    __tablename__ = "geographic_risk_zones"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    zone_id = Column(
+        String,
+        unique=True
+    )
+
+    zone_name = Column(String)
+
+    hotspot_count = Column(
+        Integer,
+        default=0
+    )
+
+    incident_count = Column(
+        Integer,
+        default=0
+    )
+
+    risk_score = Column(Integer)
+
+    severity_level = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+class ZoneRiskAnalytics(Base):
+    __tablename__ = "zone_risk_analytics"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    analytics_id = Column(
+        String,
+        unique=True
+    )
+
+    zone_id = Column(String)
+
+    average_risk_score = Column(Integer)
+
+    hotspot_count = Column(Integer)
+
+    incident_count = Column(Integer)
+
+    risk_rank = Column(Integer)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+class RiskHeatmap(Base):
+    __tablename__ = "risk_heatmaps"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    heatmap_id = Column(
+        String,
+        unique=True
+    )
+
+    zone_id = Column(String)
+
+    latitude = Column(String)
+
+    longitude = Column(String)
+
+    risk_score = Column(Integer)
+
+    severity_level = Column(String)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

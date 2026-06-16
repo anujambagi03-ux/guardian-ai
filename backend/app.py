@@ -93,6 +93,11 @@ from hotspot_service import (
     get_hotspot_analytics
 )
 
+from geographic_risk_service import (
+    generate_zone,
+    generate_zone_analytics,
+    generate_heatmap
+)
 from models import (
     Base,
     Vehicle,
@@ -111,7 +116,9 @@ from models import (
     TrafficTrend,
     AIDecision,
     IncidentPattern,
-    Hotspot
+    Hotspot,
+    GeographicRiskZone,
+    RiskHeatmap
 )
 
 from schemas import (
@@ -1567,3 +1574,74 @@ def hotspot_analytics(
     return (
         get_hotspot_analytics(db)
     )
+
+@app.post("/zone/generate")
+def create_zone(
+    db: Session = Depends(get_db)
+):
+    zone = generate_zone(db)
+
+    return {
+        "message": "Zone generated",
+        "zone_id": zone.zone_id,
+        "risk_score": zone.risk_score,
+        "severity": zone.severity_level
+    }
+
+@app.get("/zone")
+def get_zones(
+    db: Session = Depends(get_db)
+):
+    return db.query(
+        GeographicRiskZone
+    ).all()
+
+@app.get("/zone/analytics")
+def zone_analytics(
+    db: Session = Depends(get_db)
+):
+    zones = db.query(
+        GeographicRiskZone
+    ).count()
+
+    critical = db.query(
+        GeographicRiskZone
+    ).filter(
+        GeographicRiskZone.severity_level
+        == "CRITICAL"
+    ).count()
+
+    return {
+        "total_zones": zones,
+        "critical_zones": critical
+    }
+
+@app.post("/zone/analytics/generate")
+def analytics_generate(
+    db: Session = Depends(get_db)
+):
+    data = generate_zone_analytics(db)
+
+    return {
+        "message": "Zone analytics generated",
+        "records": len(data)
+    }
+
+@app.post("/heatmap/generate")
+def heatmap_generate(
+    db: Session = Depends(get_db)
+):
+    data = generate_heatmap(db)
+
+    return {
+        "message": "Heatmap generated",
+        "points": len(data)
+    }
+
+@app.get("/heatmap")
+def get_heatmap(
+    db: Session = Depends(get_db)
+):
+    return db.query(
+        RiskHeatmap
+    ).all()
